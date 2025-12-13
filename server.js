@@ -87,5 +87,23 @@ app.post("/products", (req, res) => {
   res.json({ message: "Product added", products });
 });
 
+const SECRET = "secret123";
+
+// Login → returns JWT
+app.post('/login', (req, res) => {
+  const token = jwt.sign({ username: req.body.username }, SECRET);
+  res.json({ token });
+});
+
+// Protected route
+app.get('/home', (req, res) => {
+  try {
+    const data = jwt.verify(req.headers.authorization, SECRET);
+    res.json({ message: "Hello " + data.username });
+  } catch {
+    res.status(401).json({ message: "Invalid token" });
+  }
+});
+
 
 app.listen(5000,()=>{console.log("Server running on port 5000");});
